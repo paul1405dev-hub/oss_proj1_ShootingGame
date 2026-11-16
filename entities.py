@@ -63,7 +63,7 @@ class Player(pygame.sprite.Sprite):
         """매 프레임 한 번 불린다. keys 는 pygame.key.get_pressed() 의 결과."""
         direction = self._read_direction(keys)
         self._move(direction)
-        # TODO(F1): 플레이어가 화면 왼쪽·오른쪽 끝 밖으로 나가지 않도록 위치를 제한.
+        self._keep_in_screen()
 
     def _read_direction(self, keys):
         """눌린 방향키를 방향 값으로 바꾼다: 왼쪽 -1, 정지 0, 오른쪽 +1. 둘 다 누르면 0."""
@@ -72,6 +72,13 @@ class Player(pygame.sprite.Sprite):
     def _move(self, direction):
         """방향 값(-1, 0, +1)만큼 PLAYER_SPEED 로 좌우 이동한다."""
         self.rect.x += direction * PLAYER_SPEED
+
+    def _keep_in_screen(self):
+        """화면 왼쪽·오른쪽 끝 밖으로 나갔으면 끝에 맞춰 되돌린다."""
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.right > WIDTH:
+            self.rect.right = WIDTH
 
     def shoot(self):
         """플레이어 위쪽 가운데에서 출발하는 총알 하나를 만들어 돌려준다."""
