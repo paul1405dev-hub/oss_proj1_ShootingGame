@@ -103,8 +103,7 @@ class Game:
         self.bullets.update()
         self.enemies.update()
 
-        # TODO(F3): 총알과 적이 부딪히면 둘 다 없애고, 맞힌 적 하나당 SCORE_PER_ENEMY 점을 더할 것.
-        #           힌트: pygame.sprite.groupcollide
+        self.handle_bullet_hits()
 
         # TODO(F4): 적이 플레이어에 닿으면 그 적을 없애고 생명(self.lives)을 1 줄일 것.
         #           힌트: pygame.sprite.spritecollide
@@ -116,6 +115,11 @@ class Game:
                 # TODO(F4): 적이 아래로 지나갔으니 생명을 1 줄일 것.
 
         # TODO(F4): 생명이 0 이하가 되면 self.end_game() 을 실행할 것.
+
+    def handle_bullet_hits(self):
+        """총알과 부딪힌 적과 총알을 둘 다 없애고, 맞힌 적 하나당 SCORE_PER_ENEMY 점을 더한다."""
+        hits = pygame.sprite.groupcollide(self.enemies, self.bullets, True, True)
+        self.score += len(hits) * SCORE_PER_ENEMY
 
     def end_game(self):
         """게임 오버 처리."""
