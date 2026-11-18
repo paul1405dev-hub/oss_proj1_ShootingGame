@@ -141,12 +141,16 @@ class Game:
         self.all_sprites.draw(self.screen)
         if self.game_over:
             self.screen.blit(self.dark_shade, (0, 0))  # 게임 오버 글자가 잘 보이게
-        self.screen.blit(self.hud_shade, (0, 0))  # 점수·생명 글자 뒤 어두운 띠
-        self.draw_text(f"LIVES: {self.lives}", self.font, WHITE, topright=(WIDTH - 10, 10))
-        # TODO(F3): 화면 왼쪽 위에 현재 점수를 "SCORE: 120" 형태로 표시할 것.
+        self.draw_hud()
         if self.game_over:
             self.draw_game_over()
         pygame.display.flip()
+
+    def draw_hud(self):
+        """화면 맨 위의 점수(왼쪽)와 생명(오른쪽) 표시를 그린다."""
+        self.screen.blit(self.hud_shade, (0, 0))  # 점수·생명 글자 뒤 어두운 띠
+        self.draw_text(f"SCORE: {self.score}", self.font, WHITE, topleft=(10, 10))
+        self.draw_text(f"LIVES: {self.lives}", self.font, WHITE, topright=(WIDTH - 10, 10))
 
     def draw_title(self):
         """시작 화면: 게임 이름, 플레이어 그림, 조작 안내, 깜빡이는 시작 안내."""
