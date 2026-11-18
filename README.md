@@ -39,7 +39,7 @@ python main.py
 
 - [x] F1 플레이어 이동 — 방향키 좌우 이동, 화면 좌우 끝 밖으로 나가지 않음
 - [x] F2 총알 발사 — 스페이스바를 입력 받아 총알을 발사, 입력 한 번에 총알 한 개가 나가며 화면을 벗어나면 사라짐 
-- [ ] F3 적 명중과 점수
+- [x] F3 적 명중과 점수 — 총알과 적의 충돌 처리, 화면 왼쪽 점수 UI 추가
 - [ ] F4 피격과 게임 오버
 - [ ] F5 재시작과 최고 점수
 
@@ -61,3 +61,4 @@ python main.py
 **기능별 설계 기록**
 - F1 플레이어 이동 — 입력 해석·이동·경계 보정을 책임별 메서드로 분리, 경계는 이동 후 보정: [테크 스펙](https://paul1405dev-hub.github.io/2026-11-17-oss-proj1-f1-tech-spec/)
 - F2 총알 발사 — 발사 입력은 `KEYDOWN`(한 번 누름에 한 발), 총알 생성과 그룹 등록은 분리, 화면 밖 제거는 `Bullet`이 담당: [테크 스펙](https://paul1405dev-hub.github.io/2026-11-17-oss-proj1-f2-tech-spec/)
+- F3 적 명중과 점수 — 충돌 판정은 `groupcollide`, 충돌 처리와 HUD 표시는 `Game`의 메서드로 분리: [테크 스펙](https://paul1405dev-hub.github.io/2026-11-18-oss-proj1-f3-tech-spec/)
