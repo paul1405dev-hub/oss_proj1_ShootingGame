@@ -105,21 +105,36 @@ class Game:
 
         self.handle_bullet_hits()
 
-        # TODO(F4): 적이 플레이어에 닿으면 그 적을 없애고 생명(self.lives)을 1 줄일 것.
-        #           힌트: pygame.sprite.spritecollide
-
-        # 화면 아래로 지나간 적은 없앨 것.
-        for enemy in list(self.enemies):
-            if enemy.rect.top > HEIGHT:
-                enemy.kill()
-                # TODO(F4): 적이 아래로 지나갔으니 생명을 1 줄일 것.
-
-        # TODO(F4): 생명이 0 이하가 되면 self.end_game() 을 실행할 것.
+        self.handle_life_loss()
+        self.check_game_over()
 
     def handle_bullet_hits(self):
         """총알과 부딪힌 적과 총알을 둘 다 없애고, 맞힌 적 하나당 SCORE_PER_ENEMY 점을 더한다."""
         hits = pygame.sprite.groupcollide(self.enemies, self.bullets, True, True)
         self.score += len(hits) * SCORE_PER_ENEMY
+
+    def handle_life_loss(self):
+        """생명을 잃는 경우(플레이어에 닿음, 화면 아래로 지나감)를 처리하고 생명을 0 이상으로 맞춘다."""
+        self.handle_player_hits()
+        self.handle_passed_enemies()
+        self.lives = max(0, self.lives)
+
+    def handle_player_hits(self):
+        """플레이어에 닿은 적을 없애고, 닿은 적 한 마리당 생명을 1 줄인다."""
+        hits = pygame.sprite.spritecollide(self.player, self.enemies, True)
+        self.lives -= len(hits)
+
+    def handle_passed_enemies(self):
+        """화면 아래로 지나간 적을 없애고, 한 마리당 생명을 1 줄인다."""
+        for enemy in list(self.enemies):
+            if enemy.rect.top > HEIGHT:
+                enemy.kill()
+                self.lives -= 1
+
+    def check_game_over(self):
+        """생명이 0 이하이면 게임 오버 처리를 한다."""
+        if self.lives <= 0:
+            self.end_game()
 
     def end_game(self):
         """게임 오버 처리."""
@@ -166,9 +181,10 @@ class Game:
 
     def draw_game_over(self):
         """게임 오버 화면. self.game_over 가 True 일 때 draw() 가 부른다."""
-        # TODO(F4): 화면 가운데에 "GAME OVER" 와 이번 판 점수를 표시할 것.
+        cx = WIDTH // 2
+        self.draw_text("GAME OVER", self.big_font, YELLOW, center=(cx, HEIGHT // 2 - 30))
+        self.draw_text(f"SCORE: {self.score}", self.font, WHITE, center=(cx, HEIGHT // 2 + 30))
         # TODO(F5): 최고 점수("HIGH SCORE: 300")와 재시작 안내("Press R to restart")도 표시할 것.
-        pass
 
     # ---------------- 게임 루프 ----------------
     def step(self):
