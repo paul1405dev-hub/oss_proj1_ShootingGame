@@ -14,16 +14,30 @@ SPAWN_ENEMY = pygame.USEREVENT + 1  # "적을 하나 만들 때가 됐다"는 �
 
 
 def load_high_score():
-    """HIGHSCORE_FILE 에서 최고 점수를 읽어 돌려준다."""
-    # TODO(F5): 파일에서 최고 점수를 읽어 int 로 반환할 것.
-    #           파일이 없거나 내용이 숫자가 아니면 0 을 반환할 것.
-    return 0
+    """HIGHSCORE_FILE 에서 최고 점수를 읽어 돌려준다. 읽을 수 없으면 0 을 돌려준다."""
+    try:
+        with open(HIGHSCORE_FILE) as f:
+            return max(0, int(f.read()))  # 음수는 0 으로 본다
+    except FileNotFoundError:
+        print("최고 점수 파일 없음: 0으로 시작")
+        return 0
+    except ValueError:
+        print("최고 점수 파일 내용이 숫자가 아님: 0으로 시작")
+        return 0
+    except Exception as e:
+        print("상정 외 오류, 확인 필요:", e)
+        return 0
 
 
 def save_high_score(score):
-    """최고 점수를 HIGHSCORE_FILE 에 저장한다."""
-    # TODO(F5): score 를 파일에 저장할 것. (다음 실행 때 load_high_score() 로 읽을 수 있게)
-    pass
+    """최고 점수를 HIGHSCORE_FILE 에 저장한다. 저장에 실패해도 게임은 계속된다."""
+    try:
+        with open(HIGHSCORE_FILE, "w") as f:
+            f.write(str(score))
+    except OSError as e:
+        print("최고 점수 저장 실패:", e)
+    except Exception as e:
+        print("상정 외 오류, 확인 필요:", e)
 
 
 class Game:
@@ -73,7 +87,8 @@ class Game:
                     self.running = False
                 elif event.key == pygame.K_SPACE and not self.game_over:
                     self.fire()
-                # TODO(F5): 게임 오버 상태에서 R 키를 누르면 self.reset() 으로 새 판을 시작할 것.
+                elif event.key == pygame.K_r and self.game_over:
+                    self.reset()
 
     def fire(self):
         """플레이어가 쏜 총알을 받아 bullets 와 all_sprites 두 그룹에 등록한다."""
@@ -139,7 +154,13 @@ class Game:
     def end_game(self):
         """게임 오버 처리."""
         self.game_over = True
-        # TODO(F5): 이번 점수가 최고 점수보다 높으면 self.high_score 를 바꾸고 save_high_score() 로 저장할 것.
+        self.update_high_score()
+
+    def update_high_score(self):
+        """이번 점수가 최고 점수보다 높을 때만 최고 점수를 바꾸고 저장한다."""
+        if self.score > self.high_score:
+            self.high_score = self.score
+            save_high_score(self.high_score)
 
     # ---------------- 그리기 ----------------
     def draw_text(self, text, font, color, **position):
@@ -182,9 +203,11 @@ class Game:
     def draw_game_over(self):
         """게임 오버 화면. self.game_over 가 True 일 때 draw() 가 부른다."""
         cx = WIDTH // 2
-        self.draw_text("GAME OVER", self.big_font, YELLOW, center=(cx, HEIGHT // 2 - 30))
-        self.draw_text(f"SCORE: {self.score}", self.font, WHITE, center=(cx, HEIGHT // 2 + 30))
-        # TODO(F5): 최고 점수("HIGH SCORE: 300")와 재시작 안내("Press R to restart")도 표시할 것.
+        self.draw_text("GAME OVER", self.big_font, RED, center=(cx, HEIGHT // 2 - 30))
+        self.draw_text("Press R to restart", self.font, YELLOW, center=(cx, HEIGHT // 2 + 30))
+        score_lines = (f"SCORE: {self.score}", f"HIGH SCORE: {self.high_score}")
+        for i, line in enumerate(score_lines):
+            self.draw_text(line, self.font, WHITE, center=(cx, HEIGHT // 2 + 90 + i * 34))
 
     # ---------------- 게임 루프 ----------------
     def step(self):
