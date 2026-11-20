@@ -2,3 +2,6 @@
 .venv/
 __pycache__/
 *.pyc
+
+# 최고 점수 파일 제외
+highscore.txt
