@@ -87,7 +87,8 @@ class Game:
                     self.running = False
                 elif event.key == pygame.K_SPACE and not self.game_over:
                     self.fire()
-                # TODO(F5): 게임 오버 상태에서 R 키를 누르면 self.reset() 으로 새 판을 시작할 것.
+                elif event.key == pygame.K_r and self.game_over:
+                    self.reset()
 
     def fire(self):
         """플레이어가 쏜 총알을 받아 bullets 와 all_sprites 두 그룹에 등록한다."""
@@ -202,9 +203,11 @@ class Game:
     def draw_game_over(self):
         """게임 오버 화면. self.game_over 가 True 일 때 draw() 가 부른다."""
         cx = WIDTH // 2
-        self.draw_text("GAME OVER", self.big_font, YELLOW, center=(cx, HEIGHT // 2 - 30))
-        self.draw_text(f"SCORE: {self.score}", self.font, WHITE, center=(cx, HEIGHT // 2 + 30))
-        # TODO(F5): 최고 점수("HIGH SCORE: 300")와 재시작 안내("Press R to restart")도 표시할 것.
+        self.draw_text("GAME OVER", self.big_font, RED, center=(cx, HEIGHT // 2 - 30))
+        self.draw_text("Press R to restart", self.font, YELLOW, center=(cx, HEIGHT // 2 + 30))
+        score_lines = (f"SCORE: {self.score}", f"HIGH SCORE: {self.high_score}")
+        for i, line in enumerate(score_lines):
+            self.draw_text(line, self.font, WHITE, center=(cx, HEIGHT // 2 + 90 + i * 34))
 
     # ---------------- 게임 루프 ----------------
     def step(self):
